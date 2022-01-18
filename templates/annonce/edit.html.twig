@@ -1,0 +1,10 @@
+{% extends 'layout/aside.html.twig' %}
+
+{% block title %}Éditer l'annonce!{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Éditer l'annonce</h1>
+        {{ include("annonce/_form.html.twig", {form: form, button: 'Éditer'}) }}
+    </div>
+{% endblock %}

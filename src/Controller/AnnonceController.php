@@ -2,154 +2,183 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Annonce;
 use App\Form\AnnonceType;
 use App\Repository\AnnonceRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Entity\AnnonceSearch;
+use App\Form\AnnonceSearchType;
 class AnnonceController extends AbstractController
 {
     /**
      * @Route("/annonce", name="annonce")
      */
-    public function index(AnnonceRepository $annonceRepository): Response
+    public function index(Request $request, PaginatorInterface $paginator, AnnonceRepository $annonceRepository)
     {
-        // on récupère le service Doctrine
-        //$doctrine = $this->getDoctrine();
-        // on récupère le "respository" Annonce, qui permet de récupérer des données en DB
-        //$annonceRepository = $doctrine->getRepository(Annonce::class); // = 'App\Entity\Annonce'
-        // on récupère toutes les annonces grâce au repository
-        //$annonces = $annonceRepository->findAll();
-        
-        return $this->render('annonce/index.html.twig', [
-            'annonces' => $annonceRepository->findBy([
-                'isSold' => false
-            ]),
-        ]);
-    }
-
-    /**
-     * @Route("/annonce/{id<\d+>}", methods={"GET"})
-     *
-     * @return void
-     */
-    public function annonceById(Annonce $annonce)
-    {
-        /*$annonce = $this->getDoctrine()->getRepository(Annonce::class)->find($id);
-
-        if(!$annonce) {
-            throw $this->createNotFoundException();
-        }*/
-
-        return $this->render('annonce/show.html.twig', [
-            'annonce' => $annonce
-        ]);
-    }
-
-    /**
-     * @Route("/annonce/new")
-     */
-    public function new(Request $request, EntityManagerInterface $em)
-    {
-        $annonce = new Annonce();
-        // on créer un formulaire
-        $form = $this->createForm(
-            AnnonceType::class, // on cherche le type (la classe où on construit le formulaire)
-            $annonce // on met les données de $annonce dans le formulaire
+        // les annonces paginé
+        $ducks = $paginator->paginate(
+            $annonceRepository->findAllNotSoldQuery(),
+            $request->query->getInt('page', 1),
+            12
         );
 
-        // écoute la requête courante
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()) { // quand le formulaire est envoyé
-            // $em = $this->getDoctrine()->getManager(); sans l'$annonceRepository
-            $em->persist($annonce);            
-            $em->flush();
-            return $this->redirectToRoute('app_annonce_annoncebyslug', ['slug' => $annonce->getSlug()]);
-        }
-
-        return $this->render('annonce/new.html.twig', [
-            'form' => $form->createView()
+        return $this->render('annonce/index.html.twig', [
+            'ducks' => $ducks
         ]);
-        
-        // ne pas oublier use App\Entity\Annonce; en haut du fichier
-        /*$annonce = new Annonce();
-        $title = 'Ma collection de canard en NFT snvdjn';
-        $annonce
-            ->setTitle($title)
-            ->setDescription('Vends car j\'ai envie de spéculer')
-            ->setStatus(Annonce::STATUS_PERFECT)
-            ->setPrice(100)
-            ->setIsSold(false)
-        ;
-
-        dump($annonce);
-
-        // on demande le service Doctrine grâce à extend AbstractController
-        $doctrine = $this->getDoctrine();
-        // on demande à Doctrine le Manager d'Entité
-        // c'est grâce à lui qu'on peut lancer des requêtes SQL
-        $entityManager = $doctrine->getManager();
-        // on prépare, on construit la requête en "persistant" une entité
-        // c'est que pour les données qui ne sont pas en base de donnée
-        $entityManager->persist($annonce);
-        // on envoie (en SQL c'est un commit) tous ce qui est persisté en base de données
-        $entityManager->flush();
-
-        dump($annonce);*/
-        
-        die('nouvelle annonce');
     }
 
     /**
-     * @Route("/annonce/search", methods={"GET"})
+     * @Route("/annonce/search")
      */
-    public function search(Request $request)
+    public function search(Request $request, AnnonceRepository $annonceRepository)
     {
+        $annonceSearch = new AnnonceSearch();
+        $form = $this->createForm(AnnonceSearchType::class, $annonceSearch);
+        
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            $annonces = $annonceRepository->search($annonceSearch);
+            dump($annonces);
+        }
+
+        return $this->render('annonce/search-form.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/annonce/new", methods={"POST", "GET"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function new(Request $request, EntityManagerInterface $em)
+    {        
+        $duck = new Annonce();
+
+        $form = $this->createForm(AnnonceType::class, $duck);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $duck->setUser($this->getUser());
+            $em->persist($duck);
+            $em->flush();
+
+            return $this->redirectToRoute('app_annonce_show', ['id' => $duck->getId()]);
+        }
+        
+        return $this->render('annonce/new.html.twig', [
+            'duck' => $duck,
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/annonce/{id}/edit"), methods={"POST", "GET"})
+     * @Security("(is_granted('ROLE_USER') and duck.getUser() == user) or is_granted('ROLE_ADMIN')")
+     */
+    public function edit(Annonce $duck, EntityManagerInterface $em, Request $request)
+    {
+        $form = $this->createForm(AnnonceType::class, $duck);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            return $this->redirectToRoute('app_annonce_show', ['id' => $duck->getId()]);         
+        }
+        
+        return $this->render('annonce/edit.html.twig', [
+            'duck' => $duck,
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/annonce/{id}", methods="DELETE")
+     * @Security("(is_granted('ROLE_USER') and duck.getUser() == user) or is_granted('ROLE_ADMIN')")
+     */
+    public function delete(Annonce $duck, EntityManagerInterface $em, Request $request)
+    {
+        if ($this->isCsrfTokenValid('delete' . $duck->getId(), $request->get('_token'))) {
+            $em->remove($duck);
+            $em->flush();
+        }
+        if ($this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('app_admin_annonce_index');
+        }
+        return $this->redirectToRoute('app_profile_annonce');
+    }
+
+    /**
+     * @Route("/annonce/{id}",
+     * requirements={"id": "\d+"})
+     * @return Response
+     */
+    public function show(int $id, AnnonceRepository $annonceRepository): Response
+    {
+
+        $ducks = $annonceRepository->find($id);
+
+        if (!$ducks) {
+            throw $this->createNotFoundException();
+        }
+        return $this->render('annonce/show.html.twig', [
+            'ducks' => $ducks,
+        ]);
+    }
+
+    /**
+     * @Route(
+     *  "/annonce/{slug}-{id}", 
+     *  requirements={"slug": "[a-z0-9\-]*", "id": "\d+"}
+     * )
+     * @return Response
+     */
+    public function showBySlug(string $slug, int $id, AnnonceRepository $annonceRepository): Response
+    {
+        $ducks = $annonceRepository->findOneBy([
+            'slug' => $slug,
+            'id' => $id
+        ]);
+
+        if (!$ducks) {
+            return $this->createNotFoundException();
+        }
+
+        return $this->render('annonce/show.html.twig', [
+            'ducks' => $ducks,
+        ]);
+    }
+
+    /**
+     * @Route("/annonce/filter", methods={"GET"})
+     */
+    public function filter(Request $rq)
+    {
+        $repository = $this->getDoctrine()->getRepository(Annonce::class);
+
+        $filters = [
+            'betterThan' => $rq->query->getInt('better_than'),
+            'newerThan' => $rq->query->get('newer_than')
+        ];
+        
         /**
          * @var AnnonceRepository $repository
          */
-        $repository = $this->getDoctrine()->getRepository(Annonce::class);
-
-        $params = [
-            'betterThan' => $request->query->getInt('better-than'),
-            'newerThan' => $request->query->get('newer-than')
-        ];
-
-        $annonces = $repository->findBySearch($params);
         
-        if (!$annonces) {
-            throw $this->createNotFoundException();
+        $ducks = $repository->fetch($filters);
+
+        if(!$ducks){
+            throw $this->createNotFoundException("Nothing found...");
         }
-
-        return $this->render('annonce/index.html.twig', [
-            'annonces' => $annonces
+        return $this->render('annonce/filter.html.twig', [
+            'ducks' => $ducks
         ]);
     }
 
-    /**
-     * @Route("/annonce/{slug<^[a-z0-9]+(?:-[a-z0-9]+)*$>}", methods={"GET"})
-     */
-    public function annonceBySlug(Annonce $annonce)
-    {
-        return $this->render('annonce/show.html.twig', [
-            'annonce' => $annonce
-        ]);
-    }
-
-    /**
-     * @Route("/annonce/{month<0[1-9]|1[0-2]>}-{year<\d{4}>}", methods={"GET"})
-     *
-     * @param integer $month
-     * @param integer $year
-     * @return void
-     */
-    public function annonceByDate(int $month, int $year)
-    {
-        die('annonce avec mois: ' . $month . ' et année ' . $year);
-    }
 }

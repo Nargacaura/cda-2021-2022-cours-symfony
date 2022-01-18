@@ -6,14 +6,17 @@
         {# Run `composer require symfony/webpack-encore-bundle`
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
+        {% endblock %}
+
+
+        {% block javascripts %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+        <script>$('select').select2()</script>
         {% endblock %}
     </head>
     <body>
         {{ include("include/main_nav.html.twig") }}
         {% block body %}<h1>Titre du site</h1>{% endblock %}
-        
-        {% block javascripts %}
-        {% endblock %}
     </body>
 </html>

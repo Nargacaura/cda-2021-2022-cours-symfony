@@ -3,32 +3,48 @@
 namespace App\Entity;
 
 use App\Repository\AnnonceRepository;
-use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Cocur\Slugify\Slugify;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\String\Slugger\AsciiSlugger;
 
 /**
  * @ORM\Entity(repositoryClass=AnnonceRepository::class)
- * @UniqueEntity("slug")
  * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity("title")
  */
 class Annonce
 {
-    public const STATUS_VERY_BAD    = 0;
-    public const STATUS_BAD         = 1;
-    public const STATUS_GOOD        = 2;
-    public const STATUS_VERY_GOOD   = 3;
-    public const STATUS_PERFECT     = 4;
+    const STATUS_VERY_BAD  = 0;
+    const STATUS_BAD       = 1;
+    const STATUS_GOOD      = 2;
+    const STATUS_VERY_GOOD = 3;
+    const STATUS_PERFECT   = 4;
 
     /**
      * @ORM\PrePersist
      */
-    public function prePersist(): void
+    public function prePersist()
     {
-        $this->slug = strtolower((new AsciiSlugger())->slug($this->title));
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new \DateTime();
+        $this->slug = (new Slugify())->slugify($this->title);
+        $this->updatedAt = new \DateTime();
     }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function preUpdate()
+    {
+        $this->updatedAt = new \DateTime();
+    }
+
+    // public function __construct()
+    // {
+    //     $this->createdAt = new \DateTime();
+    // }
 
     /**
      * @ORM\Id
@@ -43,7 +59,11 @@ class Annonce
     private $title;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
+     * @Assert\Length(
+     *      min = 40,
+     *      minMessage = "La description doit faire plus de {{ limit }} charactères",
+     * )
      */
     private $description;
 
@@ -53,9 +73,9 @@ class Annonce
     private $price;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default": false})
      */
-    private $isSold;
+    private $sold = false;
 
     /**
      * @ORM\Column(type="integer")
@@ -63,14 +83,44 @@ class Annonce
     private $status;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
+     * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true, unique=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $slug;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $updatedAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Url(
+     *      protocols = {"http", "https"}
+     * )
+     */
+    private $imageUrl;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="annonces")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Annonce", mappedBy="annonces")
+     */
+    private $tags;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->tags = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -86,7 +136,7 @@ class Annonce
     {
         $this->title = $title;
 
-        return $this; // fluent
+        return $this;
     }
 
     public function getDescription(): ?string
@@ -94,7 +144,7 @@ class Annonce
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -113,14 +163,14 @@ class Annonce
         return $this;
     }
 
-    public function getIsSold(): ?bool
+    public function getSold(): ?bool
     {
-        return $this->isSold;
+        return $this->sold;
     }
 
-    public function setIsSold(bool $isSold): self
+    public function setSold(bool $sold): self
     {
-        $this->isSold = $isSold;
+        $this->sold = $sold;
 
         return $this;
     }
@@ -137,12 +187,12 @@ class Annonce
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -154,9 +204,73 @@ class Annonce
         return $this->slug;
     }
 
-    public function setSlug(?string $slug): self
+    public function setSlug(string $slug): self
     {
-        $this->slug = $slug;
+        $slugify_me = new Slugify();
+        $this->slug = $slugify_me->slugify($slug);
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getImageUrl(): ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function setImageUrl(?string $imageUrl): self
+    {
+        $this->imageUrl = $imageUrl;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+            $tag->addAnnonce($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeAnnonce($this);
+        }
 
         return $this;
     }

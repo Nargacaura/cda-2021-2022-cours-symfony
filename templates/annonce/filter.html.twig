@@ -1,0 +1,36 @@
+{% extends "layout/aside.html.twig" %}
+
+{% block aside %}
+<div class="container">
+    <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">SmallAds</h1>
+        <p class="lead">Vends toutes tes affaires !</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Liste des annonces</h1>
+        <div class="row">
+        {% for duck in ducks %}
+            <div class="col-md-4">
+                <div class="card">
+                    <img class="img-fluid" src="{% if duck.imageUrl is not null %}{{ duck.imageUrl }}{% endif %}">
+                    <div class="card-img-top">
+                        <h5 class="card-title">{{ duck.title }}</h5>
+                        <p class="card-text">{{ duck.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <a href="{{ path('app_annonce_show', {id: duck.id, slug: duck.slug}) }}" class="btn btn-sm btn-outline-secondary" type="button">View</a>
+                                <a class="btn btn-sm btn-outline-secondary" type="button">Edit</a>
+                            </div>
+                            <small class="text-muted">{{ duck.price }}€</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

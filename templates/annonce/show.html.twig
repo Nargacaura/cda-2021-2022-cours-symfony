@@ -1,6 +1,59 @@
-{% extends 'layout/full_width.html.twig' %}
+{% extends 'layout/aside.html.twig' %}
+
+{% block title %}#{{ ducks.id }}-{{ ducks.title }}!{% endblock %}
+
+{% block aside %}
+<div class="container">
+    <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">SmallAds</h1>
+        <p class="lead">Vends toutes tes affaires !</p>
+    </div>
+</div>
+{% endblock %}
 
 {% block content %}
-    <h1>{{ annonce.title }}</h1>
-    <p>{{ annonce.title }}</p>
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <img class="img-fluid" src="{% if ducks.imageUrl is not null %}{{ ducks.imageUrl }}{% endif %}">
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h4 class="my-0 font-weight-normal">{{ ducks.title }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <p class="h1 card-title pricing-card-title">
+                                {{ ducks.price }} €
+                            </p>
+                            
+                            <p>
+                                {% if ducks.status == constant('App\\Entity\\Annonce::STATUS_VERY_BAD') %}
+                                    <span class="badge btn btn-outline-danger">État très mauvais</span>
+                                {% elseif ducks.status == constant('App\\Entity\\Annonce::STATUS_BAD') %}
+                                    <span class="badge btn btn-outline-warning">Mauvais état</span>
+                                {% elseif ducks.status == constant('App\\Entity\\Annonce::STATUS_GOOD') %}
+                                    <span class="badge btn btn-outline-primary">Bon état</span>
+                                {% elseif ducks.status == constant('App\\Entity\\Annonce::STATUS_VERY_GOOD') %}
+                                    <span class="badge btn btn-outline-info">Très bon état</span>
+                                {% elseif ducks.status == constant('App\\Entity\\Annonce::STATUS_PERFECT') %}
+                                    <span class="badge btn btn-outline-success">Parfait état</span>
+                                {% endif %}
+                            </p>
+                            <button class="btn btn-lg btn-block btn-outline-primary" type="button">Contacter le vendeur</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h2>Description</h2>
+                <p>{{ ducks.description }}</p>
+            </div>
+        </div>
+    </div>
 {% endblock %}

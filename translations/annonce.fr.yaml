@@ -1,6 +1,6 @@
-annonce:
-  status_0: 'Très mauvais état'
-  status_1: 'Mauvais état'
-  status_2: 'Bon état'
-  status_3: 'Très bon état'
-  status_4: 'Parfait état'
+status:
+  1: Mauvaise qualité
+  2: Qualité médiocre
+  3: Bonne qualité
+  4: Excellente qualité
+  0: Piètre qualité

@@ -1,8 +1,7 @@
-{% extends "layout/full_width.html.twig" %}
+{% extends "layout/aside.html.twig" %}
+{% block title %}Nouvelle annonce!{% endblock %}
 
 {% block content %}
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input class="btn btn-primary" type="submit" value="Créer">
-    {{ form_end(form) }}
+    <h1>Nouvelle annonce</h1>
+    {{ include("annonce/_form.html.twig", {form: form, button: 'Créer'}) }}
 {% endblock %}

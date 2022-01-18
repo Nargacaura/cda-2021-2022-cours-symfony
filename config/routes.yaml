@@ -5,3 +5,7 @@
 about: # le nom peut être défini comme on veut !
   path: /about
   controller: App\Controller\AboutController::index
+
+admin:
+  path: /admin/annonce
+  controller: App\Controller\Admin\AnnonceController::index
