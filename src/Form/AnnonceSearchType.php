@@ -66,7 +66,8 @@ class AnnonceSearchType extends AbstractType
                 'label' => false,
                 'class' => Tag::class,
                 'choice_label' => 'name',
-                'multiple' => true
+                'multiple' => true,
+                'placeholder' => 'Tags'
             ])
             ->add('submit', SubmitType::class)
         ;

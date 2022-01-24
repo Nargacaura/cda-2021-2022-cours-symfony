@@ -55,13 +55,19 @@ class Annonce
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *      min = 4,
+     *      max = 255
+     * )
      */
     private $title;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      * @Assert\Length(
-     *      min = 40,
+     *      min = 10,
+     *      max = 2000,
      *      minMessage = "La description doit faire plus de {{ limit }} charactères",
      * )
      */
@@ -69,16 +75,24 @@ class Annonce
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank
+     * @Assert\Type("integer")
      */
     private $price;
 
     /**
      * @ORM\Column(type="boolean", options={"default": false})
+     * @Assert\Type("boolean")
      */
     private $sold = false;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Type("integer")
+     * @Assert\Range(
+     *      min = 0,
+     *      max = 4
+     * )
      */
     private $status;
 
