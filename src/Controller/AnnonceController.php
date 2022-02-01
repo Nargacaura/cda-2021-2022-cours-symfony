@@ -61,10 +61,10 @@ class AnnonceController extends AbstractController
     {        
         $duck = new Annonce();
 
-        $form = $this->createForm(AnnonceType::class, $duck);
-        $form->handleRequest($request);
+        $newForm = $this->createForm(AnnonceType::class, $duck);
+        $newForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($newForm->isSubmitted() && $newForm->isValid()) {
             $duck->setUser($this->getUser());
             $em->persist($duck);
             $em->flush();
@@ -74,7 +74,7 @@ class AnnonceController extends AbstractController
         
         return $this->render('annonce/new.html.twig', [
             'duck' => $duck,
-            'form' => $form->createView()
+            'form' => $newForm->createView()
         ]);
     }
 

@@ -40,10 +40,9 @@ class AnnonceType extends AbstractType
             ->add('createdAt',DateType::class, [
                 'widget' => 'single_text', //tu peux lire https://symfony.com/doc/current/reference/forms/types/date.html#rendering-a-single-html5-text-box
             ])
-            ->add('tags', EntityType::class, [
-                'class' => Tag::class,
-                'choice_label' => 'name', // c'est la propriété dans l'entitié Tag qui sera affiché dans le select
-                'multiple' => true
+            ->add('tags', TagType::class, [
+                'data_class' => null, // c'est la propriété dans l'entitié Tag qui sera affiché dans le select
+                'allow_extra_fields' => true
             ])
         ;
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
