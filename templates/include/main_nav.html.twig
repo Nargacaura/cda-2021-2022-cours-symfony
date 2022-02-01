@@ -8,7 +8,7 @@
         </li>
     </ul>
 
-    <button class="btn btn-primary ml-1" type="button" data-toggle="collapse" data-target="#search" aria-expanded="false" aria-controls="collapseExample">
+    {# <button class="btn btn-primary ml-1" type="button" data-toggle="collapse" data-target="#search" aria-expanded="false" aria-controls="collapseExample">
 		Recherche avancée
 	</button>
 
@@ -16,7 +16,7 @@
 		<div class="card card-body">
 			{{ render_esi(controller('App\\Controller\\AnnonceController::search')) }}
 		</div>
-	</div>
+	</div> #}
 
     {% if app.user %}
         <a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>

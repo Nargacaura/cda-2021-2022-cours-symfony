@@ -37,7 +37,7 @@
         <h1>Liste des annonces</h1>
         <div class="row">
         {% for duck in ducks %}
-            <div class="col-md-4">
+            <div class="col-lg-3">
                 <div class="card">
                     <img class="img-fluid" src="{% if duck.imageUrl is not null %}{{ duck.imageUrl }}{% endif %}">
                     <div class="card-img-top">
@@ -46,7 +46,9 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
                                 <a href="{{ path('app_annonce_show', {id: duck.id, slug: duck.slug}) }}" class="btn btn-sm btn-outline-secondary" type="button">View</a>
-                                <a class="btn btn-sm btn-outline-secondary" type="button">Edit</a>
+                                {% if app.user == duck.user %}
+                                    <a class="btn btn-sm btn-outline-secondary" type="button">Edit</a>
+                                {% endif %}
                             </div>
                             <small class="text-muted">{{ duck.price }}€</small>
                         </div>

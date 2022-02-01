@@ -4,7 +4,7 @@ namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
+use Faker\Factory as Faker;
 use App\Entity\Annonce;
 use App\Repository\UserRepository;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -20,22 +20,20 @@ class AnnonceFixture extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager)
     {
-        $faker = Factory::create('fr_FR');
+        $faker = Faker::create('fr_FR');
         $users = $this->userRepository->findAll();
         $usersLength = count($users)-1;
-        for ($i=0; $i < 1000; $i++) { 
-            // permet d'avoir un utilisateur random
-            // possible à faire avec Faker mais plus lourd en ressource
+        for ($i=0; $i < 500; $i++) { 
             $randomKey = rand(0, $usersLength);
             $user = $users[$randomKey];
 
             $annonce = new Annonce();
             $annonce
-                ->setTitle($faker->words(3, true))
-                ->setDescription($faker->sentences(3, true))
-                ->setPrice($faker->numberBetween(10, 100))
+                ->setTitle($faker->words($faker->numberBetween(1, 10), true))
+                ->setDescription($faker->sentences($faker->numberBetween(1, 5), true))
+                ->setPrice($faker->numberBetween(1, 1000))
                 ->setStatus($faker->numberBetween(0, 4))
-                ->setSold(false)
+                ->setSold($faker->boolean())
                 ->setUser($user)
             ;
             $manager->persist($annonce);

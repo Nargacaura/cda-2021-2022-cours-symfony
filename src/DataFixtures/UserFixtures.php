@@ -4,7 +4,7 @@ namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Entity\User;
 use Faker\Factory as Faker;
 
@@ -13,19 +13,19 @@ class UserFixtures extends Fixture
     /**
      * Permet d'encoder un mot de passe
      *
-     * @var UserPasswordEncoderInterface
+     * @var UserPasswordHasherInterface
      */
-    private $encoder;
+    private $hasher;
 
-    public function __construct(UserPasswordEncoderInterface $encoder)
+    public function __construct(UserPasswordHasherInterface $hasher)
     {
-        $this->encoder = $encoder;    
+        $this->hasher = $hasher;    
     }
 
 
     public function load(ObjectManager $manager)
     {
-        $faker = Faker::create();
+        $faker = Faker::create('fr_FR');
         
         $lastname = $faker->lastName();
         $firstname = $faker->firstName();
@@ -38,21 +38,22 @@ class UserFixtures extends Fixture
             ->setLastName($lastname)
             ->setPseudonym($pseudo)
             ->setRoles(['ROLE_ADMIN']) 
-            ->setPassword($this->encoder->encodePassword($user, 'admin'))
+            ->setPassword($this->hasher->hashPassword($user, 'admin'))
         ;
         $manager->persist($user);
 
         for ($i=0; $i < 100; $i++) { 
             $lastname = $faker->lastName();
             $firstname = $faker->firstName();
-            $pseudo = $this->createPseudo($lastname, $firstname);            ;
+            $pseudo = $faker->userName();            ;
             $user = new User();
+            $password = $this->hasher->hashPassword($user, 'password');
             $user
                 ->setEmail($faker->email())
                 ->setFirstName($firstname)
                 ->setLastName($lastname)
                 ->setPseudonym($pseudo)
-                ->setPassword($this->encoder->encodePassword($user, 'password'))
+                ->setPassword($password)
             ;
             $manager->persist($user);
         }

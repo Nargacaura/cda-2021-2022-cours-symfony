@@ -42,7 +42,7 @@
     <h2>Les dernières annonces</h2>
     <div class="row">
         {% for duck in ducks %}
-            <div class="col-md-6">
+            <div class="col-lg-3">
                 <div class="card">
                     <img class="img-fluid" src="{% if duck.imageUrl is not null %}{{ duck.imageUrl }}{% endif %}">
                     <div class="card-img-top">
