@@ -126,7 +126,7 @@ class Annonce
     private $user;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Annonce", mappedBy="annonces")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="annonces", cascade={"persist"})
      */
     private $tags;
 

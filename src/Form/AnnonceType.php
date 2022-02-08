@@ -6,8 +6,9 @@ use App\Entity\Annonce;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class AnnonceType extends AbstractType
@@ -40,9 +41,10 @@ class AnnonceType extends AbstractType
             ->add('createdAt',DateType::class, [
                 'widget' => 'single_text', //tu peux lire https://symfony.com/doc/current/reference/forms/types/date.html#rendering-a-single-html5-text-box
             ])
-            ->add('tags', TagType::class, [
-                'data_class' => null, // c'est la propriété dans l'entitié Tag qui sera affiché dans le select
-                'allow_extra_fields' => true
+            ->add('tags', CollectionType::class, [
+                'entry_type' => TagType::class,
+                'entry_options' => ['label' => false],
+                'allow_add' => true
             ])
         ;
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {

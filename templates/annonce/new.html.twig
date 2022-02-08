@@ -1,7 +1,13 @@
 {% extends "layout/aside.html.twig" %}
 {% block title %}Nouvelle annonce!{% endblock %}
+{% block javascripts %}<script src="{{ asset("scripts/tag.js") }}"></script>{% endblock %}
 
 {% block content %}
     <h1>Nouvelle annonce</h1>
     {{ include("annonce/_form.html.twig", {form: form, button: 'Créer'}) }}
+    <ul class="tags"
+    data-index="{{ form.tags|length > 0 ? form.tags|last.vars.name + 1 : 0 }}"
+    data-prototype="{{ form_widget(form.tags.vars.prototype)|e('html_attr') }}"
+></ul>
+    <button type="button" class="add_item_link" data-collection-holder-class="tags">+</button>
 {% endblock %}

@@ -2,19 +2,21 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Tag;
 use App\Entity\Annonce;
 use App\Form\AnnonceType;
-use App\Repository\AnnonceRepository;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
-use Knp\Component\Pager\PaginatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Entity\AnnonceSearch;
 use App\Form\AnnonceSearchType;
+use App\Repository\AnnonceRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 class AnnonceController extends AbstractController
 {
     /**
@@ -60,7 +62,7 @@ class AnnonceController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em)
     {        
         $duck = new Annonce();
-
+        $duck->addTag(new Tag());
         $newForm = $this->createForm(AnnonceType::class, $duck);
         $newForm->handleRequest($request);
 
@@ -178,6 +180,16 @@ class AnnonceController extends AbstractController
         }
         return $this->render('annonce/filter.html.twig', [
             'ducks' => $ducks
+        ]);
+    }
+
+    /**
+     * @Route("/annonce-by-tag/{id<\d+>}")
+     */
+    public function annonceByTag(Tag $tag){
+        return $this->render('annonce/index.html.twig', [
+            'ducks' => $tag->getAnnonces(),
+            'selectedTagID' => $tag->getId()
         ]);
     }
 

@@ -25,7 +25,7 @@ class Tag
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Annonce", inversedBy="tags")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Annonce", mappedBy="tags")
      */
     private $annonces;
 
