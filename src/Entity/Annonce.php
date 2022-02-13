@@ -130,6 +130,11 @@ class Annonce
      */
     private $tags;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Address::class, inversedBy="annonce")
+     */
+    private $address;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -285,6 +290,18 @@ class Annonce
         if ($this->tags->removeElement($tag)) {
             $tag->removeAnnonce($this);
         }
+
+        return $this;
+    }
+
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?Address $address): self
+    {
+        $this->address = $address;
 
         return $this;
     }

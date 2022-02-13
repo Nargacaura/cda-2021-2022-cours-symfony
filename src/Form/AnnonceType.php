@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Annonce;
+use App\Form\AddressAutocompleteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -46,6 +47,7 @@ class AnnonceType extends AbstractType
                 'entry_options' => ['label' => false],
                 'allow_add' => true
             ])
+            ->add('address', AddressAutocompleteType::class)
         ;
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             $builder
