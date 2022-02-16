@@ -47,4 +47,15 @@ class AddressRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findByPosition($latitude, $longitude, $radius){
+        $query = $this->createQueryBuilder("a");
+        $haversine = "(6371 * acos(cos(radians($latitude)) * cos(radians(a.latitude)) * cos(radians(a.longitude) - radians($longitude)) + sin(radians($latitude)) * sin(radians(a.latitude))))";
+        
+        return $query->leftJoin("a.annonce", "an")
+        ->andWhere("$haversine <= :radius")
+        ->setParameter('radius', $radius)
+        ->getQuery()
+        ->getResult();
+    }
 }
