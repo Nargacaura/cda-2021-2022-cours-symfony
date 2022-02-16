@@ -50,6 +50,7 @@ class Annonce
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("annonce")
      */
     private $id;
 

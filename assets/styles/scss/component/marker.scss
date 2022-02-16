@@ -19,6 +19,10 @@
       position: absolute;
       border-radius: 50%;
    }
+
+   .pin-annonce::after {
+      display:none;
+   }
   
   // to align icon
   .custom-div-icon i {
