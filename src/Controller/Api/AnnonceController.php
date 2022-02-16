@@ -13,11 +13,14 @@ class AnnonceController extends AbstractController
     #[Route('/api/annonce/search-by-position')]
     public function searchByPosition(Request $rq, AddressRepository $addresses): Response
     {
-        $latitude = $rq->query->get('latitude');
-        $longitude = $rq->query->get('longitude');
+        $latitude = $rq->query->get('latitude', 48.55596344379681);
+        $longitude = $rq->query->get('longitude', 7.743205251587887);
         $radius = $rq->query->get('radius', 10);
 
         $annoncesInAddress = $addresses->findByPosition($latitude, $longitude, $radius);
-        dd($annoncesInAddress);
+        
+        return $this->json($annoncesInAddress, 200, [], [
+            'groups' => ['localisation', 'annonce']
+        ]);
     }
 }

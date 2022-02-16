@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\AnnonceRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Cocur\Slugify\Slugify;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AnnonceRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -59,6 +60,7 @@ class Annonce
      *      min = 4,
      *      max = 255
      * )
+     * @Groups("annonce")
      */
     private $title;
 
@@ -69,6 +71,7 @@ class Annonce
      *      max = 2000,
      *      minMessage = "La description doit faire plus de {{ limit }} charactères",
      * )
+     * @Groups("annonce")
      */
     private $description;
 
@@ -76,12 +79,14 @@ class Annonce
      * @ORM\Column(type="integer")
      * @Assert\NotBlank
      * @Assert\Type("integer")
+     * @Groups("annonce")
      */
     private $price;
 
     /**
      * @ORM\Column(type="boolean", options={"default": false})
      * @Assert\Type("boolean")
+     * @Groups("annonce")
      */
     private $sold = false;
 
@@ -92,21 +97,25 @@ class Annonce
      *      min = 0,
      *      max = 4
      * )
+     * @Groups("annonce")
      */
     private $status;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("annonce")
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("annonce")
      */
     private $slug;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("annonce")
      */
     private $updatedAt;
 
@@ -115,6 +124,7 @@ class Annonce
      * @Assert\Url(
      *      protocols = {"http", "https"}
      * )
+     * @Groups("annonce")
      */
     private $imageUrl;
 

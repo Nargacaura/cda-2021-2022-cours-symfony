@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\AddressRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Repository\AddressRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=AddressRepository::class)
@@ -21,36 +22,43 @@ class Address
 
     /**
      * @ORM\Column(type="string", length=21, nullable=true)
+     * @Groups("localisation")
      */
     private $longitude;
 
     /**
      * @ORM\Column(type="string", length=21, nullable=true)
+     * @Groups("localisation")
      */
     private $latitude;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("localisation")
      */
     private $city;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("localisation")
      */
     private $street;
 
     /**
      * @ORM\Column(type="string", length=9)
+     * @Groups("localisation")
      */
     private $zipCode;
 
     /**
      * @ORM\Column(type="string", length=5, nullable=true)
+     * @Groups("localisation")
      */
     private $streetNumber;
 
     /**
      * @ORM\OneToMany(targetEntity=Annonce::class, mappedBy="address")
+     * @Groups("annonce")
      */
     private $annonce;
 
