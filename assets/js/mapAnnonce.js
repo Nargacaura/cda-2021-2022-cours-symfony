@@ -40,6 +40,12 @@ function geolocate() {
     
             map.setView([latitude, longitude], 13)
             pinpoint.setLatLng(L.latLng(latitude, longitude))
+            var circle = L.circle([latitude, longitude], {
+                color: '#edb20c',
+                fillColor: 'none',
+                fillOpacity: 0.5,
+                radius: 500*rad
+            }).addTo(annoncesInMap);
             
             const API_URL = `/api/annonce/search-by-position?latitude=${latitude}&longitude=${longitude}&radius=${rad}`
 
@@ -83,6 +89,13 @@ function locate() {
 
     map.setView([latitude, longitude], 13)
     pinpoint.setLatLng(L.latLng(latitude, longitude))
+
+    var circle = L.circle([latitude, longitude], {
+        color: '#edb20c',
+        fillColor: 'none',
+        fillOpacity: 0.5,
+        radius: 500*rad
+    }).addTo(annoncesInMap);
 
     const API_URL = `/api/annonce/search-by-position?latitude=${latitude}&longitude=${longitude}&radius=${rad}`
 
