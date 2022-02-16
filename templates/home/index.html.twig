@@ -51,7 +51,7 @@
 <div class="container-fluid">
     <h2>Carte des annonces</h2>
     <div id="map" style="height: 500px"></div>
-    <input type="text" class="addressAutocomplete" placeholder="Adresse">
+    <input type="text" class="addressAutocomplete" style="display: inline" placeholder="Adresse"> <span>(Radius: <input type="range" style="display: inline" class="radius" min="1" value="10" oninput="this.nextElementSibling.value = this.value"> <output>10</output>)</span><br>
     <input type="hidden" id="annonce_address_latitude">
     <input type="hidden" id="annonce_address_longitude">
     <button type="button" class="changeLocation">Changer ma localisation</button>

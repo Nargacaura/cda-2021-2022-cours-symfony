@@ -4,6 +4,7 @@ import L from 'Leaflet'
 
 const geolocator = document.querySelector(".geolocate")
 const locator = document.querySelector(".changeLocation")
+const radius = document.querySelector(".radius")
 const custom_latitude = document.querySelector("#annonce_address_latitude")
 const custom_longitude = document.querySelector("#annonce_address_longitude")
 const map = L.map('map').setView([48, 7], 7)
@@ -35,11 +36,12 @@ function geolocate() {
             annoncesInMap.clearLayers()
             var latitude = `${position.coords.latitude}`
             var longitude = `${position.coords.longitude}`
+            var rad = radius.value
     
             map.setView([latitude, longitude], 13)
             pinpoint.setLatLng(L.latLng(latitude, longitude))
             
-            const API_URL = `/api/annonce/search-by-position?latitude=${latitude}&longitude=${longitude}`
+            const API_URL = `/api/annonce/search-by-position?latitude=${latitude}&longitude=${longitude}&radius=${rad}`
 
             const xhr = fetch(API_URL)
 
@@ -77,14 +79,14 @@ function locate() {
     annoncesInMap.clearLayers()
     var latitude = custom_latitude.value
     var longitude = custom_longitude.value
+    var rad = radius.value
 
     map.setView([latitude, longitude], 13)
     pinpoint.setLatLng(L.latLng(latitude, longitude))
 
-    const API_URL = `/api/annonce/search-by-position?latitude=${latitude}&longitude=${longitude}`
+    const API_URL = `/api/annonce/search-by-position?latitude=${latitude}&longitude=${longitude}&radius=${rad}`
 
     const xhr = fetch(API_URL)
-    console.log(latitude + ", " + longitude)
 
     xhr.then(response => response.json())
     .then(json => {
