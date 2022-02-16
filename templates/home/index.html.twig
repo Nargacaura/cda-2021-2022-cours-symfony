@@ -1,5 +1,15 @@
 {% extends "layout/aside.html.twig" %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('leaflet') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('mapAnnonce') }}
+{% endblock %}
+
 {# {% set statut = 'inconnu' %}
 {% block content %}
     <h1>{{ title }}</h1>
@@ -39,6 +49,9 @@
 
 {% block content %}
 <div class="container-fluid">
+    <h2>Carte des annonces</h2>
+    <div id="map" style="height: 500px"></div>
+    <button type="button" class="geolocate">Localise-moi!</button>
     <h2>Les dernières annonces</h2>
     <div class="row">
         {% for duck in ducks %}

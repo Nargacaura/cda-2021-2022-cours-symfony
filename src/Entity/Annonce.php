@@ -13,7 +13,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass=AnnonceRepository::class)
  * @ORM\HasLifecycleCallbacks()
- * @UniqueEntity("title")
  */
 class Annonce
 {
@@ -131,7 +130,7 @@ class Annonce
     private $tags;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Address::class, inversedBy="annonce")
+     * @ORM\ManyToOne(targetEntity=Address::class, inversedBy="annonce", cascade={"persist"})
      */
     private $address;
 

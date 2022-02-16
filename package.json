@@ -20,6 +20,7 @@
     },
     "dependencies": {
         "ckeditor": "^4.12.1",
+        "leaflet": "^1.7.1",
         "yarn": "^1.22.17"
     }
 }

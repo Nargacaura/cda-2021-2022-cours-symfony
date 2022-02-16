@@ -38,6 +38,9 @@
     "amphp/windows-registry": {
         "version": "v0.3.3"
     },
+    "beberlei/doctrineextensions": {
+        "version": "v1.3.0"
+    },
     "cocur/slugify": {
         "version": "v4.0.0"
     },
