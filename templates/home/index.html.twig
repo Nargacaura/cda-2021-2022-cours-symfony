@@ -51,7 +51,11 @@
 <div class="container-fluid">
     <h2>Carte des annonces</h2>
     <div id="map" style="height: 500px"></div>
-    <button type="button" class="geolocate">Localise-moi!</button>
+    <input type="text" class="addressAutocomplete" placeholder="Adresse">
+    <input type="hidden" id="annonce_address_latitude">
+    <input type="hidden" id="annonce_address_longitude">
+    <button type="button" class="changeLocation">Changer ma localisation</button>
+    <button class="geolocate" type="button">Géoocalise-moi!</button>
     <h2>Les dernières annonces</h2>
     <div class="row">
         {% for duck in ducks %}
