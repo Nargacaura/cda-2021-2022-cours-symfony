@@ -9,11 +9,14 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ORM\Entity(repositoryClass=AnnonceRepository::class)
  * @ORM\HasLifecycleCallbacks()
+ * @ApiResource(
+ *      normalizationContext={"groups"={"annonce"}}
+ * )
  */
 class Annonce
 {
